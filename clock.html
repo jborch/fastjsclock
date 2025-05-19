@@ -1,0 +1,105 @@
+<html>
+  <head>
+    <title>Clock</title>
+    <style>
+      html,
+      body {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        font-family: Consolas, sans-serif;
+      }
+      body {
+        background: linear-gradient(
+          to top right,
+          #5285c6 0%,
+          #66deeb 30%,
+          #82849c 70%,
+          #e89090 100%
+        );
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      "
+    >
+      <div
+        style="
+          text-align: center;
+          background: rgba(0, 0, 0, 0.8);
+          color: rgba(255, 255, 255, 0.8);
+          border-radius: 20px;
+          padding: 20px;
+          width: 90vw;
+        "
+      >
+        <div id="date" style="font-size: 8vw; font-weight: bolder"></div>
+        <div id="time" style="font-size: 13vw; font-weight: bolder"></div>
+        <div id="fps" style="font-size: 5vw"></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const date = document.getElementById("date");
+        const clock = document.getElementById("time");
+        const now = new Date();
+        date.innerText = `${now.getFullYear()}-${(now.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`;
+
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+        let currentFps = 0;
+
+        function updateTime() {
+          const now = new Date();
+          clock.innerText = `${now.getHours().toString().padStart(2, "0")}:${now
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}:${now
+            .getSeconds()
+            .toString()
+            .padStart(2, "0")}.${now
+            .getMilliseconds()
+            .toString()
+            .padStart(3, "0")}`;
+
+          // Increment frame count
+          frameCount++;
+
+          // Update FPS counter once per second
+          const currentTime = performance.now();
+          if (currentTime - lastFpsUpdate >= 1000) {
+            currentFps = Math.round(
+              (frameCount * 1000) / (currentTime - lastFpsUpdate)
+            );
+            document.getElementById("fps").innerText = `FPS: ${currentFps}`;
+            frameCount = 0;
+            lastFpsUpdate = currentTime;
+          }
+
+          requestAnimationFrame(updateTime);
+        }
+
+        updateTime();
+
+        setTimeout(function () {
+          window.location.reload();
+        }, 1000 * 60 * 60);
+      })();
+    </script>
+  </body>
+</html>

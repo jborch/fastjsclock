@@ -1,0 +1,166 @@
+<html>
+  <head>
+    <title>Clock</title>
+    <style>
+      html,
+      body {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        font-family: Consolas, sans-serif;
+      }
+      #lineContainer {
+        height: 100vh;
+        position: absolute;
+      }
+      .line {
+        width: 10px;
+        height: 100%;
+        display: inline-block; /* Necessary for white-space nowrap to work */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="lineContainer">
+      <!-- Lines here... -->
+    </div>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      "
+    >
+      <div
+        style="
+          text-align: center;
+          background: rgba(0, 0, 0, 0.8);
+          color: rgba(255, 255, 255, 0.8);
+          border-radius: 20px;
+          padding: 20px;
+          width: 90vw;
+        "
+      >
+        <div id="date" style="font-size: 8vw; font-weight: bolder"></div>
+        <div id="time" style="font-size: 13vw; font-weight: bolder"></div>
+        <div id="fps" style="font-size: 5vw"></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        // JavaScript to move the lines
+        const windowWidth = window.innerWidth;
+        const container1 = document.getElementById("lineContainer");
+        const colors = [
+          "#FFFFFFFF",
+          "#FF0000",
+          "#FF4500",
+          "#FFA500",
+          "#FFD700",
+          "#FFFF00",
+          "#ADFF2F",
+          "#008000",
+          "#0000FF",
+          "#4B0082",
+          "#EE82EE",
+          "#8A2BE2",
+          "#FF00FF",
+        ];
+        let currentMargin = 0;
+        let speed = 1; // Speed of movement
+
+        function createLines() {
+          // Create lines
+          colors.forEach((color) => {
+            const line = document.createElement("div");
+            line.style.backgroundColor = color;
+            line.className = "line";
+            container1.appendChild(line);
+          });
+        }
+        createLines();
+
+        while (container1.offsetWidth < windowWidth) {
+          createLines();
+        }
+
+        const containerWidth = container1.offsetWidth;
+
+        container2 = container1.cloneNode(true);
+        document.body.insertBefore(container2, container1);
+        let primaryContainer = true;
+
+        // Function to move the lines
+        function moveLines() {
+          currentMargin -= speed;
+          if (currentMargin <= -container1.offsetWidth) {
+            currentMargin += container1.offsetWidth;
+          }
+          container1.style.left = `${currentMargin}px`;
+          container2.style.left = `${currentMargin + container1.offsetWidth}px`;
+        }
+
+        // Continuously move the lines
+        setInterval(moveLines, 5);
+      })();
+    </script>
+    <script>
+      (function () {
+        const date = document.getElementById("date");
+        const clock = document.getElementById("time");
+        const now = new Date();
+        date.innerText = `${now.getFullYear()}-${(now.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`;
+
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+        let currentFps = 0;
+
+        function updateTime() {
+          const now = new Date();
+          clock.innerText = `${now.getHours().toString().padStart(2, "0")}:${now
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}:${now
+            .getSeconds()
+            .toString()
+            .padStart(2, "0")}.${now
+            .getMilliseconds()
+            .toString()
+            .padStart(3, "0")}`;
+
+          // Increment frame count
+          frameCount++;
+
+          // Update FPS counter once per second
+          const currentTime = performance.now();
+          if (currentTime - lastFpsUpdate >= 1000) {
+            currentFps = Math.round(
+              (frameCount * 1000) / (currentTime - lastFpsUpdate)
+            );
+            document.getElementById("fps").innerText = `FPS: ${currentFps}`;
+            frameCount = 0;
+            lastFpsUpdate = currentTime;
+          }
+
+          requestAnimationFrame(updateTime);
+        }
+
+        updateTime();
+
+        setTimeout(function () {
+          window.location.reload();
+        }, 1000 * 60 * 60);
+      })();
+    </script>
+  </body>
+</html>
